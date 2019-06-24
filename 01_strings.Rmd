@@ -1,0 +1,617 @@
+---
+output: 
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+background-image: url(www/slide1.png)
+background-size: cover
+
+<link rel="stylesheet" type="text/css" href="www/enap.css">
+
+
+---
+
+```{r setup, include=FALSE}
+options(max.print = 30, digits = 4)
+knitr::opts_chunk$set(fig.align = "center", fig.width = 10, fig.height = 6)
+library(tidyverse)
+```
+
+# Percurso do curso
+
+<br/>
+<br/>
+
+1. Noções de **R**
+
+2. Ciclo da ciência de dados e tidyverse
+
+3. Lidando com strings
+
+4. Fatores e Datas
+
+5. Funções e programação funcional
+
+6. Comunicação: Markdown e shiny
+
+---
+
+# Percurso de hoje
+
+1. Por que saber manipular textos?
+
+2. Básico de textos
+
+3. Expresões regulares
+
+3.1 Caso básico
+3.2 Grupos
+3.3 Buscar alternativas ([] e |)
+3.4 Principais classes
+3.5 Caracteres especiais
+3.6 Ancoras
+3.7 Repetições (quantidades)
+
+4. Detectar exprssões
+
+5. Extrair expressões
+
+6. Substituir expressões
+
+7. Separar texto
+
+
+---
+
+# SLIDES SOBRE POR QUE MANIPULAR TEXTO
+
+---
+
+# SLIDE SOBRE STRINGR
+
+```{r}
+library(stringr)
+```
+
+---
+
+# Incluindo textos
+
+```{r}
+texto1 <- "É assim que incluímos texto no R, com aspas"
+
+texto2 <- 'Podem ser aspas duplas (") ou simples (\')'
+```
+
+---
+
+# Incluindo textos
+
+```
+> "Este é um texto sem as aspas de fechamento
++ 
++ 
++ ME AJUDA!!
+```
+
+---
+
+# Tamanho dos textos
+
+```{r}
+str_length(c(texto1, texto2, NA))
+```
+
+---
+
+# Dica
+
+Deixe o RStudio trabalhar por você.
+
+![](https://d33wubrfki0l68.cloudfront.net/7d1defbecac1e73595c3841f2753a09734dcb0be/0b58f/screenshots/stringr-autocomplete.png)
+
+---
+
+# Combinando textos: R base
+
+```{r}
+paste("x", "y")
+paste("x", "y", "z")
+```
+
+Use argumento sep para determinar o que deve haver entre os textos 
+
+```{r}
+paste("x", "y", sep = ", ")
+paste("x", "y", sep = "") # igual paste0("x", "y")
+```
+
+---
+
+# Combinando textos: stringr
+
+```{r}
+str_c("x", "y")
+str_c("x", "y", "z")
+```
+
+Use argumento sep para determinar o que deve haver entre os textos 
+
+```{r}
+str_c("x", "y", sep = ", ")
+```
+
+---
+
+# Combinando textos: vetorização
+
+```{r}
+paste0("prefix-", c("a", "b", "c"), "-suffix")
+str_c("prefix-", c("a", "b", "c"), "-suffix")
+```
+
+---
+
+# Combinando textos: colapsar
+
+```{r}
+paste0(c("x", "y", "z"), collapse = ", ")
+str_c(c("x", "y", "z"), collapse = ", ")
+```
+
+---
+
+# Pedaços de textos
+
+```{r}
+x <- c("Apple", "Banana", "Pear")
+str_sub(x, 1, 3) # conta da esquerda
+
+# conta da direita com indices negativos
+str_sub(x, -3, -1)
+```
+
+---
+
+# Pedaços de textos
+
+O que ocorre se pedirmosum pedaço que não existe?
+
+```{r}
+str_sub("a", 1, 5)
+```
+
+---
+
+# Pedaços de textos: designação
+
+Podemos substituir o pedaço de textos selecionado. Para isso devemos atrbuir um novo 
+valor para a seleção.
+
+```{r}
+str_sub(x, 1, 1)
+str_sub(x, 1, 1) <- c("a", "b", "p")
+x
+```
+
+---
+
+# Exercícios
+
+1. Em códigos que não usam o stringr, você verá o uso de paste() e paste0(). 
+Qual a diferença entre essas duas funções? Que função do stringr é equivalente 
+à elas? Como essas funções diferem no tratamento de NA? 
+
+2. Use str_length() e str_sub() para extrair o caractere do meio de "exercício".
+
+3. O que str_trim() faz? Qual o seu oposto?
+
+4. Escreva uma função que transforme o vetor c("a", "b", "c") em "a, b, and c". 
+Como a função deve reagir quando recebe argumentos de tamanho 0, 1, ou 2?
+
+
+---
+
+# Expressões regulares
+
+Expressões regulares são usadas para realizar buscas em texto.
+
+O primeiro caminho é identificar textos "literais".
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_view(x, "an")
+```
+
+---
+
+# Expressões regulares
+
+Podemos usar o `.` para denotar qualquer caractere exceto uma nova linha (`\n`).
+
+```{r}
+str_view(x, ".a.")
+```
+
+---
+
+# Expressões regulares
+
+Para encontrar o `.` devemos "escapar" o ponto. Os caracteres são escapados 
+no R com uma barra investida. A própria barra deve ser escapada.
+
+```{r}
+str_view(c("abc", "a.c", "bef"), "a\\.c")
+```
+
+---
+
+# Exercícios
+
+```{r}
+exercicio <- c("erro", "\"'\\")
+```
+
+1. Como você encontraria a expressão `"'\` no vetor `exercicio`?
+
+2. Que padrões seria identificados pela expressão regular 
+"\\..\\..\\.."?
+
+---
+
+# Expressões regulares: ancoras
+
+Use `^` para identificar o inicio de uma string e 
+`$`para identificar o seu final.
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_view(x, "^a")
+str_view(x, "a$")
+```
+
+---
+
+# Expressões regulares: ancoras
+
+Use `^` para identificar o inicio de uma string e 
+`$`para identificar o seu final.
+
+```{r}
+x <- c("apple pie", "apple", "apple cake")
+str_view(x, "^apple$")
+```
+
+---
+
+# Exercícios
+
+1. Como você identificaria o texto "$^$"?
+
+Use o vetor stringr::words para os exercícis a seguir.
+Conheça o argumento `match` de str_view().
+
+2. Encontre apenas palavras que comecem com "y".
+
+3. Encontre apenas palavras que terminam com "x".
+
+4. Encontre apenas palavras que tenham exatamente 3 letras (usando regex).
+
+5. Encontre apenas palavras com mais de 7 letras.
+
+---
+
+# Expressões regulares
+
+Existem padrões especiais que identificam mais de um caractere. 
+Um deles é `.`. Há outros. O princiapais são:
+
+1. `\\d`: encontra um dígito ou número
+2. `\\s`: encontra um espaço em branco
+3. `[abc]`: encontra a, b ou c
+4. `[^abc]`: encontra tudo exceto a,b ou c.
+
+---
+
+# Expressões regulares
+
+Dentro dos `[]` os caracteres se comportam como literais, exceto quando podem 
+comprir uma função dentro deste grupo de caracteres.
+As exeções são `]`, `\`, `^` e `-`.
+
+```{r}
+str_view(c("abc", "a.c", "a*c", "a c"), "a[.]c")
+```
+
+---
+
+# Expressões regulares
+
+O caractere `|` pode ser usado para denotar "ou".
+
+```{r}
+x <- c("Apple", "Orange",  "Pear")
+str_view(x, "a|e")
+```
+
+---
+
+# Expressões regulares
+
+Para encontrarmos "ar" ou "an", como pode fazer?
+
+```{r}
+# Não funciona. Ou tudo à esquerda ou tudo à direita
+str_view(x, "ar|n")
+
+# Podemos explcitar os limites do "ou"
+str_view(x, "a(r|n)")
+```
+
+---
+
+# Exercícios
+
+Use o vetor `stringr::words`.
+
+1. Crie expressões regulares que encontre palavras que:
+* Comecem com um vogal
+* Que só contenham consoantes
+* Que termine com `ed`, mas não com `eed`
+
+2. Verifique se `q` vem sempre sucedido por `u`.
+
+3. Crie uma expressão regular para identificar telefones. 
+Teste com algum número conhecido.
+
+---
+
+# Expressões regulares
+
+Há notação nas expressões regulares para denotar repetição de padrões.
+
+* `?`: 0 ou 1
+
+* `+`: 1 ou mais
+
+* `*`: 0 ou mais
+
+---
+
+# Expressões regulares
+
+```{r}
+x <- "1888 é o ano mais comprido em números romanos: MDCCCLXXXVIII"
+str_view(x, "CC?")
+str_view(x, "CC+")
+str_view(x, 'C[LX]+')
+```
+
+---
+
+# Expressões regulares
+
+Também podemos especificar quantidades mais precisas.
+
+* `{n}`: Examente n vezes
+* `{n,}`: n vezes ou mais
+* `{,m}`: Ao menos m vezes
+* `{n,m}`: Pelo menos n vezes e no máximo m vezes
+
+---
+
+# Expressões regulares
+
+```{r}
+str_view(x, "C{2}")
+str_view(x, "C{2,}")
+str_view(x, "C{2,3}")
+```
+
+---
+
+# Exercícios
+
+1. Descreva os equivalentes de `?`, `*` e `+` na forma {n,m}.
+
+2.  Identifique os padrões encontrados pelas expressões regulares a seguir:
+
+\* `"^.*$"`
+* `"\\{.+\\}"`
+* `"\\d{4}-\\d{2}-\\d{2}"`
+* `"\\\\{4}"`
+    
+3. Crie expressões para encontrar todas as palavras em 
+`words` que:
+
+* Comecem com três consoantes
+* Tenham três ou mais vogais seguidas
+* Tenham dois ou mais pares vogal-consoante seguidos
+
+---
+
+# Detectando padrões
+
+A função `str_detect()` retorna um vetor lógico indicando a ocorrência 
+ou não da expressão regular em cada elemento do primeiro argumento.
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_detect(x, "e")
+```
+
+---
+
+# Detectando padrões
+
+Lembre que podemos contar a quantidade de verdadeiros em um vetor lógico 
+somando-o ou ver a proporção de verdadeiros tirando sua média.
+
+```{r}
+sum(str_detect(words, "^t"))
+mean(str_detect(words, "[aeiou]$"))
+```
+
+---
+
+# Detectando padrões
+
+Um uso comum de `str_detect()` é selecionar apenas os elementos do vetor 
+que satisfaçam a expressão regular. `str_subset()` é um atalho para isso.
+
+```{r}
+words[str_detect(words, "x$")]
+str_subset(words, "x$")
+```
+
+---
+
+# Detectando padrões
+
+Caso as palavas estejam em uma tabela, use `str_detect()` dentro de `filter()`.
+
+```{r}
+df <- tibble(
+  word = words, 
+  i = seq_along(word)
+)
+df %>% 
+  filter(str_detect(word, "x$"))
+```
+
+---
+
+# Contando padrões
+
+Os padrões podem ser contados com `str_count()`.
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_count(x, "a")
+
+mean(str_count(words, "[aeiou]"))
+```
+
+---
+
+# Contando padrões
+
+`str_count()` pode ser usado em combinação com `mutate` em `data.frame`s.
+
+```{r}
+df %>% 
+  mutate(
+    vowels = str_count(word, "[aeiou]"),
+    consonants = str_count(word, "[^aeiou]")
+  )
+```
+
+
+---
+
+# Exercícios
+
+1. Encontre todas as palavras que começam ou terminam com `x`.
+
+2. Encontre todas as palavras que começam com uma vogal e terminam com 
+uma consoante.
+
+3. Existem palavras que contenham as 5 vogais?
+
+4. Qual palavras tem a maior quantidade de vogais?
+
+---
+
+# Extrair padrões
+
+A função `str_extract()` permite extrair os padrões encontrados.
+
+```{r}
+colours <- c("red", "orange", "yellow", "green", "blue", "purple")
+colour_match <- str_c(colours, collapse = "|")
+colour_match
+
+# o vetor "sentences" faz parte do stringr
+head(str_subset(sentences, colour_match))
+```
+
+---
+
+# Extrair padrões
+
+```{r}
+mais_de_um <- sentences[str_count(sentences, colour_match) > 1]
+str_view_all(mais_de_um, colour_match)
+```
+
+---
+
+# Extrair padrões
+
+Mas o que acontece quando tentamos extrair as cores dessas frases?
+
+```{r}
+str_extract(mais_de_um, colour_match)
+```
+
+O `str_extract()` extrai apenas o primeiro encontro da regex. Para extrair 
+todos devemos usar `str_extract_all()`
+
+```{r}
+str_extract_all(mais_de_um, colour_match)
+```
+
+---
+
+# Extrair padrões
+
+É possível simplificar o resultado com o argumento `simplify`.
+
+```{r}
+str_extract_all(mais_de_um, colour_match, simplify = TRUE)
+
+x <- c("a", "a b", "a b c")
+str_extract_all(x, "[a-z]", simplify = TRUE)
+```
+
+---
+
+# Exercícios
+
+1. Corrija a expressão regular usada no penultimo exemplo para que 
+não encontre "red" na palavra "flickered".
+
+2. Extraia a primeira palavra de cada sentença.
+
+3. Extraia todas as palavras que terminam com `ing`.
+
+---
+
+# Substituindo padrões
+
+As funções `str_replace` e `str_replace_all` permitem substituir os padrões 
+encontrados por outros textos.
+
+```{r}
+x <- c("apple", "pear", "banana")
+str_replace(x, "[aeiou]", "-")
+str_replace_all(x, "[aeiou]", "-")
+```
+
+---
+
+# Exercícios
+
+```{r}
+cpfs <- c("101.735.349-29", "232.822.651-58", "546.892.474-98")
+esaf <- "Curso de R oferecido pela ESAF" 
+```
+
+1. Substitua os seis dígitos do meio dos CPFs por "xxx.xxx".
+
+2. Substitua o nome do órgão organizador deste curso no vetor `esaf`.
