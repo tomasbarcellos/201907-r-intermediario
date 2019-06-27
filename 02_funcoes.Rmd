@@ -421,6 +421,8 @@ if (this) {
 }
 ```
 
+---
+
 # Execução condicional: condições multiplas
 
 O `switch()` pode ser uma forma útil de reduzir longas cadeias de if/else.
@@ -470,7 +472,339 @@ if (temp <= 0) {
 
 ---
 
-# ---------------
-# Parei no 19.5
-# ---------------
+# Argumentos
+
+Há dois tipos fundamentais de argumentos:
+
+1. **Dados** nos quais realizar as operações
+
+2. **Detalhes** de como fazer a função deve se comportar 
+
+```{r}
+args(log)
+args(str_detect)
+```
+
+---
+
+# Argumentos
+
+Boas práticas:
+
+1. **Dados** devem ser primeiros argumentos
+
+2. **Detalhes** devem ter um padrão (usuário pode não fornecer).
+
+---
+
+# Argumentos
+
+```{r}
+mean_ci <- function(x, conf = 0.95) {
+  se <- sd(x) / sqrt(length(x))
+  alpha <- 1 - conf
+  mean(x) + se * qnorm(c(alpha / 2, 1 - alpha / 2))
+}
+```
+
+---
+
+# Argumentos
+
+```{r}
+x <- runif(100)
+mean_ci(x)
+mean_ci(x, conf = 0.99)
+```
+
+---
+
+# Verificação de valores
+
+Na medida em que nos distanciamos do código que escrevemos, 
+é comum esquecer seus detalhes e sutilezas. 
+
+Como essa função funciona? O que posso e o que não posso/devo 
+fazer com essa função?
+
+Para evitar pegar o seu futuro eu na surpresa, faça as restrições da 
+função explícitas.
+
+---
+
+# Verificação de valores
+
+```{r}
+wt_mean <- function(x, w) {
+  sum(x * w) / sum(w)
+}
+wt_var <- function(x, w) {
+  mu <- wt_mean(x, w)
+  sum(w * (x - mu) ^ 2) / sum(w)
+}
+wt_sd <- function(x, w) {
+  sqrt(wt_var(x, w))
+}
+```
+
+---
+
+# Verificação de valores
+
+Qual o problema do código abaixo?
+
+```{r}
+wt_mean(1:6, 1:3)
+```
+
+---
+
+# Verificação de valores
+
+```{r}
+wt_mean <- function(x, w) {
+  if (length(x) != length(w)) {
+    stop("`x` and `w` must be the same length", call. = FALSE)
+  }
+  sum(w * x) / sum(w)
+}
+```
+
+---
+
+# Verificação de valores
+
+Quando é demais?
+
+```{r, eval = FALSE}
+wt_mean <- function(x, w, na.rm = FALSE) {
+  if (!is.logical(na.rm)) {
+    stop("`na.rm` must be logical")
+  }
+  if (length(na.rm) != 1) {
+    stop("`na.rm` must be length 1")
+  }
+  if (length(x) != length(w)) {
+    stop("`x` and `w` must be the same length", call. = FALSE)
+  }
+  
+  ...
+}
+```
+
+---
+
+# Verificação de valores
+
+Funções podem ser suas amigas
+
+```{r, error = TRUE}
+wt_mean <- function(x, w, na.rm = FALSE) {
+  stopifnot(is.logical(na.rm), length(na.rm) == 1)
+  stopifnot(length(x) == length(w))
+  
+  if (na.rm) {
+    miss <- is.na(x) | is.na(w)
+    x <- x[!miss]
+    w <- w[!miss]
+  }
+  sum(w * x) / sum(w)
+}
+
+wt_mean(1:6, 6:1, na.rm = "foo")
+```
+
+---
+
+# ...
+
+
+E as funções que podem receber um número qualquer de argumentos?
+Como elas conseguem fazer isso?
+
+```{r}
+sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+stringr::str_c("a", "b", "c", "d", "e", "f")
+```
+
+---
+
+# ...
+
+Os `...` capituram quaisquer número de argumentos que não tenham sido 
+identificados como algum dos argumentos nomeados da função.
+
+
+```{r}
+commas <- function(...) stringr::str_c(..., collapse = ", ")
+commas(letters[1:10])
+```
+
+Os `...` também podem permitir passar argumentos nomeados para outra função.
+
+```{r}
+commas(letters[1:10], letters[11:20], sep = "!")
+```
+
+---
+
+# ...
+
+Mas **cuidado**, argumentos com nome errado não vão gerar erros nesses casos!
+
+```{r}
+x <- c(1, 2)
+sum(x, na.mr = TRUE)
+```
+
+
+---
+
+# Exercícios
+
+1. O que ocorre em `commas(letters, collapse = "-")`? Por que ocorre isso?
+
+2. O que faz o argumento `trim` da função `mean()`? Quando podemos usá-lo?
+
+3. O argumento padrão de `method` na função `cor()` é 
+`c("pearson", "kendall", "spearman")`. O que isso significa?
+Que argumento é usado por padrão?
+
+
+---
+
+# Retorno da função
+
+O retorno da função é a sua razão de existir.
+
+Há duas coisas que devemos levar em conta quando decidir quando/como retornar 
+o resultado da função
+
+1. Retornar cedo pode simplificar a função?
+
+2. Posso tornar minha função "pipeável"?
+
+---
+
+# Retorno da função
+
+Por padrão o `R` retorna a ultima expressão avaliada em uma função. 
+Mas se quiser fugir dessa regra podemos usar a função `return()`.
+
+```{r}
+funcao_complicada <- function(x, y, z) {
+  if (length(x) == 0 || length(y) == 0) {
+    return(0)
+  }
+    
+  # Código complicado
+}
+```
+
+---
+
+# Retorno da função
+
+```{r}
+f <- function() {
+  if (x) {
+    # Do 
+    # something
+    # that
+    # takes
+    # many
+    # lines
+    # to
+    # express
+  } else {
+    # return something short
+  }
+}
+```
+
+---
+
+# Retorno da função
+
+```{r}
+f <- function() {
+  if (!x) {
+    return(something_short)
+  }
+
+  # Do 
+  # something
+  # that
+  # takes
+  # many
+  # lines
+  # to
+  # express
+}
+```
+
+---
+
+# Retorno da função
+
+```{r}
+mostrar_ausentes <- function(df) {
+  n <- sum(is.na(df))
+  cat("Valores ausentes: ", n, "\n", sep = "")
+  
+  invisible(df)
+}
+```
+
+---
+
+# Retorno da função
+
+```{r}
+mostrar_ausentes(mtcars)
+```
+
+Cadê o `data.frame`?
+
+---
+
+# Retorno da função
+
+```{r}
+x <- mostrar_ausentes(mtcars) 
+class(x)
+dim(x)
+```
+
+---
+
+# Retorno da função
+
+E agora nossa função é "pipeável"!
+
+```{r}
+mtcars %>% 
+  mostrar_ausentes() %>% 
+  mutate(mpg = ifelse(mpg < 20, NA, mpg)) %>% 
+  mostrar_ausentes()
+```
+
+---
+
+# Ambientes
+
+O `R` vai buscar os valores no ambiente em que a função foi chamada 
+caso não encontre o valor dentro da própria função.
+
+```{r}
+f <- function(x) {
+  x + y
+}
+
+y <- 100
+f(10)
+
+y <- 1000
+f(10)
+```
 
