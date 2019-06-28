@@ -1,0 +1,513 @@
+---
+output: 
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+background-image: url(www/slide1.png)
+background-size: cover
+
+<link rel="stylesheet" type="text/css" href="www/enap.css">
+
+
+---
+
+```{r setup, include=FALSE}
+options(max.print = 30, digits = 4)
+knitr::opts_chunk$set(fig.align = "center", fig.width = 10, fig.height = 6)
+```
+
+# Percurso do curso
+
+<br/>
+<br/>
+
+1. Noções de **R**
+
+2. Ciclo da ciência de dados e tidyverse
+
+3. **União de dados**
+
+3. Lidando com strings
+
+4. Fatores e Datas
+
+5. Funções e programação funcional
+
+6. Comunicação: Markdown e shiny
+
+---
+
+# Percurso de hoje
+
+1. Para que unir tabelas?
+
+2. Uniões de mudança
+
+3. Uniões de filtro
+
+---
+
+# SLIDES SOBRE UNIAO
+
+---
+
+# SLIDE SOBRE UNIAO
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+---
+
+# Os dados
+
+```{r}
+airlines
+```
+
+---
+
+# Os dados
+
+```{r}
+airports
+```
+
+---
+
+# Os dados
+
+```{r}
+planes
+```
+
+---
+
+# Os dados
+
+```{r}
+weather
+```
+
+---
+
+# Os dados
+
+![](https://d33wubrfki0l68.cloudfront.net/245292d1ea724f6c3fd8a92063dcd7bfb9758d02/5751b/diagrams/relational-nycflights.png)
+
+---
+
+# Os dados
+
+* `flights` se conecta a `planes` por uma única variável, `tailnum`. 
+
+* `flights` se conecta a `airlines` pela variável `carrier`.
+
+* `flights` se conecta a `airports` de duas maneiras: por `origin` e `dest`.
+
+* `flights` se conecta a `weather` por `origin` (a localização), e
+  `year`, `month`, `day` e `hour` (a hora).
+  
+---
+
+# Exercícios
+
+1. Imagine que voê quer desenhar a rota de cada avião da sua origem 
+para seu destino. Que variáveis você usaria? Que tabelas você precisaria combinar?
+
+2. A relação entre `weather` e `airports` não foi desenhada. Qual a relação 
+e como deveria aparecer no diagrama?
+
+---
+
+# Chave
+
+Chaves são variáveis usadas para conectar tabelas. Uma chave identifica 
+apenas uma observação. `tailnum`, por exemplo, identifica um avião.
+Há casos em que precisamos de muitas variáveis para identificar uma observação.
+
+* __Chave primária__: Identifica uma observação na **própria tabela**.
+Exemplo: `planes$tailnum`.
+
+* __Chave secundária__: Identifica uma observação em **outra tabela**.
+Exemplo: `flights$tailnum`. 
+
+---
+
+# Chave
+
+Podemos contar as chaves das tabelas para verificar se são únicas. 
+
+```{r}
+planes %>% 
+  count(tailnum) %>% 
+  filter(n > 1)
+
+weather %>% 
+  count(year, month, day, hour, origin) %>% 
+  filter(n > 1)
+```
+
+---
+
+# Chave
+
+As vezes a tabela não tem chave. Podemos adicioná-la com 
+`mutate()` e `row_number()`.
+
+```{r}
+flights %>% 
+  count(year, month, day, flight) %>% 
+  filter(n > 1)
+```
+
+---
+
+# Chave
+
+As vezes a tabela não tem chave. Podemos adicioná-la com 
+`mutate()` e `row_number()`.
+
+```{r}
+flights %>% 
+  count(year, month, day, tailnum) %>% 
+  filter(n > 1)
+```
+
+---
+
+# Exercício
+
+1. Adiciona uma chave em `flights`. Salve o resultado em `flights`.
+
+2. Quais são as chaves das tabelas `Batting`, `Master` e `Salaries` do pacote 
+`Lahman`? Explore a documentação das tabelas (`?nome_da_tabela`).
+
+3. Desenhe um diagrama conectando as tabelas do exercício anterior.
+
+---
+
+# União de mutação
+
+São uniões de tabelas permite combinar as variáveis de duas tabelas.
+
+Assim como `mutate()`, as uniões adicionam variáveis ao final da tabela.
+
+---
+
+# União de mutação
+
+Vamos reduzir as colunas disponíveis em nossa tabela 
+(para caber nos slides).
+
+```{r}
+flights2 <- flights %>% 
+  select(year:day, hour, origin, dest, tailnum, carrier)
+flights2
+```
+
+---
+
+# União de mutação
+
+Para unir na tabela `flights2` as informções das companhias aéreas, podemos 
+combinar as tabelas `flights2` e `airlines` com `left_join()`.
+
+```{r}
+flights2 %>%
+  select(-origin, -dest) %>% 
+  left_join(airlines, by = "carrier")
+```
+
+---
+
+# Entendendo uniões
+
+![](https://d33wubrfki0l68.cloudfront.net/108c0749d084c03103f8e1e8276c20e06357b124/5f113/diagrams/join-setup.png)
+
+---
+
+# Entendendo uniões
+
+```{r}
+x <- tribble(
+  ~key, ~val_x,
+     1, "x1",
+     2, "x2",
+     3, "x3"
+)
+y <- tribble(
+  ~key, ~val_y,
+     1, "y1",
+     2, "y2",
+     4, "y3"
+)
+```
+
+---
+
+# União interna
+
+![](https://d33wubrfki0l68.cloudfront.net/3abea0b730526c3f053a3838953c35a0ccbe8980/7f29b/diagrams/join-inner.png)
+
+
+---
+
+# União interna
+
+```{r}
+x %>% 
+  inner_join(y, by = "key")
+```
+
+---
+
+# Uniões externas
+
+* esquerda: mantem todas as observações de `x`.
+
+* direita: mantem todas as observações de `y`.
+
+* completo: mantem todas as observações de `x` e `y`.
+
+---
+
+# Uniões externas
+
+![](https://d33wubrfki0l68.cloudfront.net/9c12ca9e12ed26a7c5d2aa08e36d2ac4fb593f1e/79980/diagrams/join-outer.png)
+
+---
+
+# Uniões
+
+![](https://d33wubrfki0l68.cloudfront.net/aeab386461820b029b7e7606ccff1286f623bae1/ef0d4/diagrams/join-venn.png)
+
+---
+
+# Chaves duplicadas
+
+1. Uma tabela tem chaves duplicadas
+
+2. As duas tabelas têm chaves duplicadas. **Geralmente é um erro!**
+
+
+---
+
+# Chaves duplicadas: uma
+
+![](https://d33wubrfki0l68.cloudfront.net/6faac3e996263827cb57fc5803df6192541a9a4b/c7d74/diagrams/join-one-to-many.png)
+
+---
+
+# Chaves duplicadas: uma
+
+```{r}
+x <- tribble(
+  ~key, ~val_x,
+     1, "x1",
+     2, "x2",
+     2, "x3",
+     1, "x4"
+)
+y <- tribble(
+  ~key, ~val_y,
+     1, "y1",
+     2, "y2"
+)
+```
+
+---
+
+# Chaves duplicadas: uma
+
+```{r}
+left_join(x, y, by = "key")
+```
+
+---
+
+# Chaves duplicadas: ambas
+
+![](https://d33wubrfki0l68.cloudfront.net/d37530bbf7749f48c02684013ae72b2996b07e25/37510/diagrams/join-many-to-many.png)
+
+---
+
+# Chaves duplicadas: ambas
+
+```{r}
+x <- tribble(
+  ~key, ~val_x,
+     1, "x1",
+     2, "x2",
+     2, "x3",
+     3, "x4"
+)
+y <- tribble(
+  ~key, ~val_y,
+     1, "y1",
+     2, "y2",
+     2, "y3",
+     3, "y4"
+)
+```
+
+---
+
+# Chaves duplicadas: ambas
+
+```{r}
+left_join(x, y, by = "key")
+```
+
+
+---
+
+# Definir chave de união
+
+A chave da união é definida no argumento `by`. Ele pode ser de três tipos:
+
+1. Não informar
+
+2. Um vetor de texto
+
+3. Um vetor de texto nomeado
+
+---
+
+# Definir chave de união
+
+
+```{r}
+# União "natural" 
+flights2 %>% 
+  left_join(weather) # chave não foi informacada/definida
+```
+
+---
+
+# Definir chave de união
+
+```{r}
+# Vetor de texto
+flights2 %>% 
+  left_join(planes, by = "tailnum")
+```
+
+---
+
+# Definir chave de união
+
+```{r}
+# Vetor de texto nomeado
+flights2 %>% 
+  left_join(airports, c("dest" = "faa"))
+```
+
+---
+
+# Definir chave de união
+
+```{r}
+# Vetor de texto nomeado
+flights2 %>% 
+  left_join(airports, c("origin" = "faa"))
+```
+
+---
+
+# Exercícios
+
+1. Adicione a localização para origem e destino em `flights`.
+
+2. Existe relação entre a idade de um avião e os atrasos?
+
+3. Que condição climática torna os atrasos mais comuns?
+
+---
+
+# Uniões de filtro
+
+* `semi_join(x, y)` __mantém__ todas observações em `x` que estejam presentes em `y`.
+
+* `anti_join(x, y)` __remove__ todas observações em `x` que estejam presentes em `y`.
+
+---
+
+# Uniões de filtro
+
+```{r}
+top_dest <- flights %>%
+  count(dest, sort = TRUE) %>%
+  head(10)
+top_dest
+```
+
+---
+
+# Uniões de filtro
+
+```{r}
+flights %>% 
+  filter(dest %in% top_dest$dest)
+```
+
+---
+
+# Uniões de filtro
+
+```{r}
+flights %>% 
+  semi_join(top_dest)
+```
+
+---
+
+# Uniões de filtro
+
+![](https://d33wubrfki0l68.cloudfront.net/028065a7f353a932d70d2dfc82bc5c5966f768ad/85a30/diagrams/join-semi.png)
+
+---
+
+# Uniões de filtro
+
+![](https://d33wubrfki0l68.cloudfront.net/e1d0283160251afaeca35cba216736eb995fee00/1b3cd/diagrams/join-semi-many.png)
+
+---
+
+# Uniões de filtro
+
+```{r}
+flights %>%
+  anti_join(planes, by = "tailnum") %>%
+  count(tailnum, sort = TRUE)
+```
+
+---
+
+# Uniões de filtro
+
+![](https://d33wubrfki0l68.cloudfront.net/f29a85efd53a079cc84c14ba4ba6894e238c3759/c1408/diagrams/join-anti.png)
+
+---
+
+# Exercícios
+
+1. Filtre voos que ocorreram com aviões que voaram mais de 100 vezes.
+
+2. Combine `fueleconomy::vehicles` e `fueleconomy::common` para encontrar 
+os registros dos modelos mais comuns.
+
+3. O que `anti_join(flights, airports, by = c("dest" = "faa"))` te diz? E 
+`anti_join(airports, flights, by = c("faa" = "dest"))`?
+
+4. Você pode achar que existe uma relação implicita entre avião e companhia 
+aérea porque cada avião pertence a uma única companhia. Confirme ou rejeite 
+essa hipótese usando as ferramentas que aprendemos.
+
+
