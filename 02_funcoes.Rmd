@@ -708,16 +708,16 @@ funcao_complicada <- function(x, y, z) {
 ```{r}
 f <- function() {
   if (x) {
-    # Do 
-    # something
-    # that
-    # takes
-    # many
-    # lines
-    # to
-    # express
+    # Fazer 
+    # algo
+    # que
+    # leva
+    # muitas
+    # linhas
+    # para
+    # expressar
   } else {
-    # return something short
+    # retorna algo curto
   }
 }
 ```
@@ -732,14 +732,14 @@ f <- function() {
     return(something_short)
   }
 
-  # Do 
-  # something
-  # that
-  # takes
-  # many
-  # lines
-  # to
-  # express
+  # Fazer 
+  # algo
+  # que
+  # leva
+  # muitas
+  # linhas
+  # para
+  # expressar
 }
 ```
 
