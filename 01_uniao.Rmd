@@ -32,13 +32,14 @@ knitr::opts_chunk$set(fig.align = "center", fig.width = 10, fig.height = 6)
 
 3. **União de dados**
 
-3. Lidando com strings
-
-4. Fatores e Datas
+4. Lidando com textos
 
 5. Funções e programação funcional
 
-6. Comunicação: Markdown e shiny
+6. Comunicação: Gráficos
+
+7. Comunicação: Markdown e shiny
+
 
 ---
 
@@ -52,16 +53,33 @@ knitr::opts_chunk$set(fig.align = "center", fig.width = 10, fig.height = 6)
 
 ---
 
-# SLIDES SOBRE UNIAO
+# União
+
+Dados geralmente vem separados:
+
+1. Por que é mais eficiente armazená-los assim;
+
+2. Por que não tinha relação antes.
+
+União (join) é a ferramenta que nos permite ligar os pontos.
 
 ---
 
-# SLIDE SOBRE UNIAO
+# Pacotes
 
-```{r}
+```{r, warning=FALSE}
 library(tidyverse)
 library(nycflights13)
 ```
+
+---
+
+# Os dados
+
+Baixar [esses dados](http://transparencia.gov.br/download-de-dados/servidores/201901_Servidores) 
+que serão usados em exercícios posteriores.
+
+
 
 ---
 
@@ -113,16 +131,11 @@ weather
 
 * `flights` se conecta a `weather` por `origin` (a localização), e
   `year`, `month`, `day` e `hour` (a hora).
-  
+
 ---
 
 # Exercícios
 
-1. Imagine que voê quer desenhar a rota de cada avião da sua origem 
-para seu destino. Que variáveis você usaria? Que tabelas você precisaria combinar?
-
-2. A relação entre `weather` e `airports` não foi desenhada. Qual a relação 
-e como deveria aparecer no diagrama?
 
 ---
 
@@ -184,12 +197,6 @@ flights %>%
 
 # Exercício
 
-1. Adiciona uma chave em `flights`. Salve o resultado em `flights`.
-
-2. Quais são as chaves das tabelas `Batting`, `Master` e `Salaries` do pacote 
-`Lahman`? Explore a documentação das tabelas (`?nome_da_tabela`).
-
-3. Desenhe um diagrama conectando as tabelas do exercício anterior.
 
 ---
 
@@ -277,10 +284,8 @@ x %>%
 * completo: mantem todas as observações de `x` e `y`.
 
 ---
-
-# Uniões externas
-
-![](https://d33wubrfki0l68.cloudfront.net/9c12ca9e12ed26a7c5d2aa08e36d2ac4fb593f1e/79980/diagrams/join-outer.png)
+background-image: url(https://d33wubrfki0l68.cloudfront.net/9c12ca9e12ed26a7c5d2aa08e36d2ac4fb593f1e/79980/diagrams/join-outer.png)
+background-size: 40%
 
 ---
 
@@ -423,11 +428,6 @@ flights2 %>%
 
 # Exercícios
 
-1. Adicione a localização para origem e destino em `flights`.
-
-2. Existe relação entre a idade de um avião e os atrasos?
-
-3. Que condição climática torna os atrasos mais comuns?
 
 ---
 
@@ -468,19 +468,19 @@ flights %>%
 
 ---
 
-# Uniões de filtro
+# Uniões de filtro: semi_join
 
 ![](https://d33wubrfki0l68.cloudfront.net/028065a7f353a932d70d2dfc82bc5c5966f768ad/85a30/diagrams/join-semi.png)
 
 ---
 
-# Uniões de filtro
+# Uniões de filtro: semi_join
 
 ![](https://d33wubrfki0l68.cloudfront.net/e1d0283160251afaeca35cba216736eb995fee00/1b3cd/diagrams/join-semi-many.png)
 
 ---
 
-# Uniões de filtro
+# Uniões de filtro: anti_join
 
 ```{r}
 flights %>%
@@ -490,24 +490,11 @@ flights %>%
 
 ---
 
-# Uniões de filtro
+# Uniões de filtro: anti_join
 
 ![](https://d33wubrfki0l68.cloudfront.net/f29a85efd53a079cc84c14ba4ba6894e238c3759/c1408/diagrams/join-anti.png)
 
 ---
 
 # Exercícios
-
-1. Filtre voos que ocorreram com aviões que voaram mais de 100 vezes.
-
-2. Combine `fueleconomy::vehicles` e `fueleconomy::common` para encontrar 
-os registros dos modelos mais comuns.
-
-3. O que `anti_join(flights, airports, by = c("dest" = "faa"))` te diz? E 
-`anti_join(airports, flights, by = c("faa" = "dest"))`?
-
-4. Você pode achar que existe uma relação implicita entre avião e companhia 
-aérea porque cada avião pertence a uma única companhia. Confirme ou rejeite 
-essa hipótese usando as ferramentas que aprendemos.
-
 
