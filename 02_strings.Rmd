@@ -31,13 +31,15 @@ library(tidyverse)
 
 2. Ciclo da ciência de dados e tidyverse
 
-3. Lidando com strings
+3. União de dados
 
-4. Fatores e Datas
+4. **Lidando com textos**
 
 5. Funções e programação funcional
 
-6. Comunicação: Markdown e shiny
+6. Comunicação: Gráficos
+
+7. Comunicação: Markdown e shiny
 
 ---
 
@@ -49,15 +51,7 @@ library(tidyverse)
 
 3. Expresões regulares
 
-3.1 Caso básico
-3.2 Grupos
-3.3 Buscar alternativas ([] e |)
-3.4 Principais classes
-3.5 Caracteres especiais
-3.6 Ancoras
-3.7 Repetições (quantidades)
-
-4. Detectar exprssões
+4. Detectar expressões
 
 5. Extrair expressões
 
@@ -65,14 +59,17 @@ library(tidyverse)
 
 7. Separar texto
 
+---
+
+# Por que manipular textos?
+
+1. Falta de padronização
+
+2. Estruturação da informação
 
 ---
 
-# SLIDES SOBRE POR QUE MANIPULAR TEXTO
-
----
-
-# SLIDE SOBRE STRINGR
+# Pacotes
 
 ```{r}
 library(stringr)
@@ -180,7 +177,7 @@ str_sub(x, -3, -1)
 
 # Pedaços de textos
 
-O que ocorre se pedirmosum pedaço que não existe?
+O que ocorre se pedirmos um pedaço que não existe?
 
 ```{r}
 str_sub("a", 1, 5)
@@ -202,18 +199,6 @@ x
 ---
 
 # Exercícios
-
-1. Em códigos que não usam o stringr, você verá o uso de paste() e paste0(). 
-Qual a diferença entre essas duas funções? Que função do stringr é equivalente 
-à elas? Como essas funções diferem no tratamento de NA? 
-
-2. Use str_length() e str_sub() para extrair o caractere do meio de "exercício".
-
-3. O que str_trim() faz? Qual o seu oposto?
-
-4. Escreva uma função que transforme o vetor c("a", "b", "c") em "a, b, and c". 
-Como a função deve reagir quando recebe argumentos de tamanho 0, 1, ou 2?
-
 
 ---
 
@@ -253,15 +238,6 @@ str_view(c("abc", "a.c", "bef"), "a\\.c")
 
 # Exercícios
 
-```{r}
-exercicio <- c("erro", "\"'\\")
-```
-
-1. Como você encontraria a expressão `"'\` no vetor `exercicio`?
-
-2. Que padrões seria identificados pela expressão regular 
-"\\..\\..\\.."?
-
 ---
 
 # Expressões regulares: ancoras
@@ -290,19 +266,6 @@ str_view(x, "^apple$")
 ---
 
 # Exercícios
-
-1. Como você identificaria o texto "$^$"?
-
-Use o vetor stringr::words para os exercícis a seguir.
-Conheça o argumento `match` de str_view().
-
-2. Encontre apenas palavras que comecem com "y".
-
-3. Encontre apenas palavras que terminam com "x".
-
-4. Encontre apenas palavras que tenham exatamente 3 letras (usando regex).
-
-5. Encontre apenas palavras com mais de 7 letras.
 
 ---
 
@@ -357,18 +320,6 @@ str_view(x, "a(r|n)")
 
 # Exercícios
 
-Use o vetor `stringr::words`.
-
-1. Crie expressões regulares que encontre palavras que:
-* Comecem com um vogal
-* Que só contenham consoantes
-* Que termine com `ed`, mas não com `eed`
-
-2. Verifique se `q` vem sempre sucedido por `u`.
-
-3. Crie uma expressão regular para identificar telefones. 
-Teste com algum número conhecido.
-
 ---
 
 # Expressões regulares
@@ -386,7 +337,7 @@ Há notação nas expressões regulares para denotar repetição de padrões.
 # Expressões regulares
 
 ```{r}
-x <- "1888 é o ano mais comprido em números romanos: MDCCCLXXXVIII"
+x <- "1888 é um ano bem comprido em números romanos: MDCCCLXXXVIII"
 str_view(x, "CC?")
 str_view(x, "CC+")
 str_view(x, 'C[LX]+')
@@ -416,22 +367,6 @@ str_view(x, "C{2,3}")
 ---
 
 # Exercícios
-
-1. Descreva os equivalentes de `?`, `*` e `+` na forma {n,m}.
-
-2.  Identifique os padrões encontrados pelas expressões regulares a seguir:
-
-\* `"^.*$"`
-* `"\\{.+\\}"`
-* `"\\d{4}-\\d{2}-\\d{2}"`
-* `"\\\\{4}"`
-    
-3. Crie expressões para encontrar todas as palavras em 
-`words` que:
-
-* Comecem com três consoantes
-* Tenham três ou mais vogais seguidas
-* Tenham dois ou mais pares vogal-consoante seguidos
 
 ---
 
@@ -516,15 +451,6 @@ df %>%
 
 # Exercícios
 
-1. Encontre todas as palavras que começam ou terminam com `x`.
-
-2. Encontre todas as palavras que começam com uma vogal e terminam com 
-uma consoante.
-
-3. Existem palavras que contenham as 5 vogais?
-
-4. Qual palavras tem a maior quantidade de vogais?
-
 ---
 
 # Extrair padrões
@@ -583,13 +509,6 @@ str_extract_all(x, "[a-z]", simplify = TRUE)
 
 # Exercícios
 
-1. Corrija a expressão regular usada no penultimo exemplo para que 
-não encontre "red" na palavra "flickered".
-
-2. Extraia a primeira palavra de cada sentença.
-
-3. Extraia todas as palavras que terminam com `ing`.
-
 ---
 
 # Substituindo padrões
@@ -605,13 +524,13 @@ str_replace_all(x, "[aeiou]", "-")
 
 ---
 
-# Exercícios
+# Separando textos
 
 ```{r}
-cpfs <- c("101.735.349-29", "232.822.651-58", "546.892.474-98")
-esaf <- "Curso de R oferecido pela ESAF" 
+frase <- "Uma frase longa com muitas palavras"
+str_split(frase, " ")
 ```
 
-1. Substitua os seis dígitos do meio dos CPFs por "xxx.xxx".
+---
 
-2. Substitua o nome do órgão organizador deste curso no vetor `esaf`.
+# Exercícios
