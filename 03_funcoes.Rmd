@@ -31,13 +31,15 @@ library(tidyverse)
 
 2. Ciclo da ciência de dados e tidyverse
 
-3. Lidando com strings
+3. União de dados
 
-4. Fatores e Datas
+4. Lidando com textos
 
-5. Funções e programação funcional
+5. **Funções**
 
-6. Comunicação: Markdown e shiny
+6. Comunicação: Gráficos
+
+7. Comunicação: Markdown e shiny
 
 ---
 
@@ -52,20 +54,6 @@ library(tidyverse)
 4. Corpo da função
 
 5. Retorno
-
-6. Boas práticas
-
----
-
-# SLIDES SOBRE POR QUE ESCREVER FUNÇÕES
-
----
-
-# SLIDE SOBRE FUNCOES
-
-```{r}
-library(stringr)
-```
 
 ---
 
@@ -283,65 +271,29 @@ rescale01(x)
 
 # Exercício
 
-1. Por que `TRUE` não é um argumento da função? O que acontece se `x` conter um 
-único `NA` e `na.rm` for igual a `FALSE`.
-
-2. Na segunda variante de `rescale01`, valores infinitos são deixados 
-intocados. Altere a função para que `-Inf` vire zero e `Inf` vire 1.
-
-3. Transforme os três trechos abaixo em funções. 
-Lembre de nomear as funções com nomes significativos. 
-Algo poderia ser reescrito para ser menos repetitivo?
-
-```{r, eval = FALSE}
-mean(is.na(x))
-
-x / sum(x, na.rm = TRUE)
-
-sd(x, na.rm = TRUE) / mean(x, na.rm = TRUE)
-```
-
-4. Escreva uma funcão `ambos_na()`, uma função que recebe dois vetores do 
-mesmo tamanho e retorna o número das posições que contém `NA` em ambos vetores.
-
-5. O que as funções abaixo fazem? Por que elas são úteis mesmo sendo tão curtas?
-
-```{r}
-is_directory <- function(x) file.info(x)$isdir
-is_readable <- function(x) file.access(x, 4) == 0
-```
-
 ---
 
 # Lembre-se: funções são para você
 
----
+## Como nomear funções
 
-# Como nomear funções
+Os nomes das funções devem ser:
 
-# FAZER
+1. Claros quanto ao que a função faz;
+
+2. Curtos;
+
+3. Verbos
+
+## Como nomear argumentos
+
+1. Claros quanto ao seu papel na função;
+
+2. Curtos
 
 ---
 
 # Exercícios
-
-1. Entenda o que as funcões abaixo fazem e dê nomes melhores a elas.
-
-```{r}
-f1 <- function(string, prefix) {
-  substr(string, 1, nchar(prefix)) == prefix
-}
-f2 <- function(x) {
-  if (length(x) <= 1) return(NULL)
-  x[-length(x)]
-}
-f3 <- function(x, y) {
-  rep(y, length.out = length(x))
-}
-```
-
-2. Escolha uma das funções escritas recentemente e busque melhorar seu nome 
-e o nome de seus argumentos.
 
 ---
 
@@ -409,66 +361,7 @@ dplyr::near(x, 2)
 
 ---
 
-# Execução condicional: condições multiplas
-
-```{r, eval = FALSE}
-if (this) {
-  # do that
-} else if (that) {
-  # do something else
-} else {
-  # 
-}
-```
-
----
-
-# Execução condicional: condições multiplas
-
-O `switch()` pode ser uma forma útil de reduzir longas cadeias de if/else.
-
-```{r}
-operacao <- function(x, y, op) {
-  switch(op,
-         mais = x + y,
-         menos = x - y,
-         vezes = x * y,
-         divide = x / y,
-         stop("Unknown op!")
-  )
-}
-operacao(1, 5, "mais")
-operacao(3, 5, "divide")
-```
-
----
-
 # Exercícios
-
-1. Qual a diferença entre `if` e `ifelse`? Leia a documentação e construa 
-exemplos que ilustrem as diferenças.
-
-2. Escreva uma função `cumprimentar` que diz "bom dia", "boa tarde" ou 
-"boa noite" dependendo da hora do dia. Veja ?lubridate::now.
-
-3. Como o uso da função `cut` pode ajudar a simplificar esta execução 
-condicional (if)?
-
-```{r, eval = FALSE}
-if (temp <= 0) {
-  "freezing"
-} else if (temp <= 10) {
-  "cold"
-} else if (temp <= 20) {
-  "cool"
-} else if (temp <= 30) {
-  "warm"
-} else {
-  "hot"
-}
-```
-
-4. O que acontece quando usamos `switch`com valores numéricos?
 
 ---
 
@@ -662,15 +555,6 @@ sum(x, na.mr = TRUE)
 
 # Exercícios
 
-1. O que ocorre em `commas(letters, collapse = "-")`? Por que ocorre isso?
-
-2. O que faz o argumento `trim` da função `mean()`? Quando podemos usá-lo?
-
-3. O argumento padrão de `method` na função `cor()` é 
-`c("pearson", "kendall", "spearman")`. O que isso significa?
-Que argumento é usado por padrão?
-
-
 ---
 
 # Retorno da função
@@ -741,52 +625,6 @@ f <- function() {
   # para
   # expressar
 }
-```
-
----
-
-# Retorno da função
-
-```{r}
-mostrar_ausentes <- function(df) {
-  n <- sum(is.na(df))
-  cat("Valores ausentes: ", n, "\n", sep = "")
-  
-  invisible(df)
-}
-```
-
----
-
-# Retorno da função
-
-```{r}
-mostrar_ausentes(mtcars)
-```
-
-Cadê o `data.frame`?
-
----
-
-# Retorno da função
-
-```{r}
-x <- mostrar_ausentes(mtcars) 
-class(x)
-dim(x)
-```
-
----
-
-# Retorno da função
-
-E agora nossa função é "pipeável"!
-
-```{r}
-mtcars %>% 
-  mostrar_ausentes() %>% 
-  mutate(mpg = ifelse(mpg < 20, NA, mpg)) %>% 
-  mostrar_ausentes()
 ```
 
 ---
