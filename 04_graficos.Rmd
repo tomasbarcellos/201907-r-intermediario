@@ -17,9 +17,33 @@ background-size: cover
 ---
 
 ```{r setup, include=FALSE}
-options(max.print = 30, digits = 4)
-knitr::opts_chunk$set(fig.align = "center", fig.width = 10, fig.height = 6)
+options(htmltools.dir.version = FALSE, max.print = 30, digits = 4)
 library(tidyverse)
+
+theme_set(
+  theme_grey() + theme(legend.position = "top")
+)
+knitr::opts_chunk$set(
+  warning = FALSE, message = FALSE, 
+  fig.align = "center", fig.retina = 2, cache = TRUE
+)
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo <- FALSE
+    options$out.width <- "100%"
+    options$out.height <- "97%"
+  }
+  options
+})
+knitr::opts_hooks$set(fig.principal = function(options) {
+  if (options$fig.principal) {
+    options$echo <- FALSE
+    options$fig.width <- 10
+    options$fig.height <- 6
+    options$out.width <- "75%"
+  }
+  options
+})
 ```
 
 # Percurso do curso
@@ -35,11 +59,11 @@ library(tidyverse)
 
 4. Lidando com textos
 
-5. **Funções**
+5. Funções
 
-6. Comunicação: Gráficos
+6. **Comunicação: Gráficos**
 
-7. Comunicação: Markdown e shiny
+7. **Comunicação: Markdown e shiny**
 
 ---
 
@@ -73,41 +97,63 @@ filmes_recentes <- imdb %>%
 
 ---
 
-# Etiquetas
+# Gráfico base
 
+.pull-left[
+```{r prep, eval=FALSE}
+colorido <- ggplot(
+  filmes_recentes, 
+  aes(duracao, receita, col = classificacao)
+  ) + geom_point()
 
-
-```{r}
-ggplot(filmes_recentes, 
-       aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
-  labs(
-    title = "Filmes após 2015",
-    subtitle = "Subtítulo do gráfico",
-    caption = "Fonte: IMDb"
-  )
-
+colorido
 ```
+]
+
+.pull-right[
+```{r, ref.label="prep", fig.callout = TRUE}
+```
+]
 
 ---
 
 # Etiquetas
 
+.pull-left[
+```{r label-1, eval=FALSE}
+colorido +
+  labs(
+    title = "Filmes após 2015",
+    subtitle = "Subtítulo do gráfico",
+    caption = "Fonte: IMDb"
+  )
+```
+]
 
+.pull-right[
+```{r, ref.label="label-1", fig.callout = TRUE}
+```
+]
 
-```{r}
-ggplot(filmes_recentes, 
-       aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
+---
+
+# Etiquetas
+
+.pull-left[
+```{r label-2, eval=FALSE}
+colorido +
   labs(
     x = "Duração (em minutos)",
     y = "Receita (em milhões de US$)",
     col = "Classificação"
   )
-
 ```
+]
+
+.pull-right[
+```{r, ref.label="label-2", fig.callout = TRUE}
+```
+]
 
 ---
 
@@ -115,9 +161,9 @@ ggplot(filmes_recentes,
 
 ```{r}
 label <- tibble(
-  duracao = Inf,
-  receita = Inf,
-  label = "Uma anotação no meu gráfico"
+  duracao = 100,
+  receita = 220,
+  label = "Teto para maioria dos filmes"
 )
 ```
 
@@ -125,181 +171,188 @@ label <- tibble(
 
 # Anotações
 
-```{r}
-ggplot(filmes_recentes, 
-       aes(duracao, receita)) +
+.pull-left[
+```{r anotacoes, eval=FALSE}
+ggplot(
+  filmes_recentes, 
+  aes(duracao, receita)
+  ) + 
   geom_point() +
   geom_text(aes(label = label), 
-            data = label, vjust = "top", 
-            hjust = "right")
+            data = label, size = 5)
 ```
+]
+
+.pull-right[
+```{r, ref.label="anotacoes", fig.callout = TRUE}
+```
+]
 
 ---
 
 # Escalas
 
-```{r}
-ggplot(filmes_recentes, 
-       aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() 
+.pull-left[
+```{r escalas-1, eval=FALSE}
+colorido
 ```
+]
+
+.pull-right[
+```{r, ref.label="escalas-1", fig.callout = TRUE}
+```
+]
 
 ---
 
 # Escalas
 
-```{r}
-ggplot(filmes_recentes, 
-       aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
+.pull-left[
+```{r escalas-2, eval=FALSE}
+colorido +
   scale_x_continuous() +
   scale_y_continuous() +
   scale_colour_discrete()
 ```
+]
 
----
-
-# Escalas
-
-```{r}
-ggplot(filmes_recentes, 
-       aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
-  scale_y_continuous(breaks = seq(100, 500, 100))
+.pull-right[
+```{r, ref.label="escalas-2", fig.callout = TRUE}
 ```
-
+]
 
 ---
 
 # Escalas
 
-```{r}
-ggplot(filmes_recentes, 
-       aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
+.pull-left[
+```{r escalas-3, eval=FALSE}
+colorido +
+  scale_y_continuous(
+    breaks = seq(100, 500, 100)
+  )
+```
+]
+
+.pull-right[
+```{r, ref.label="escalas-3", fig.callout = TRUE}
+```
+]
+
+---
+
+# Escalas
+
+.pull-left[
+```{r escalas-4, eval=FALSE}
+colorido +
   scale_y_continuous(labels = NULL)
 ```
+]
+
+.pull-right[
+```{r, ref.label="escalas-4", fig.callout = TRUE}
+```
+]
 
 ---
 
 # Escalas
+
+.pull-left[
 
 A legenda pode ser posicionada em "top", "bottom",  "left",  "right".
 
-```{r}
-ggplot(filmes_recentes, 
-       aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
+```{r escalas-5, eval=FALSE}
+colorido +
   theme(legend.position = "left")
 ```
+]
 
----
-
-# Escalas
-
-As escalas padrões podem ser substituídas.
-
-```{r}
-ggplot(filmes_recentes, 
-       aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
-  scale_colour_brewer(palette = "Set1")
-
+.pull-right[
+```{r, ref.label="escalas-5", fig.callout = TRUE}
 ```
+]
 
 ---
 
 # Escalas
 
+.pull-left[
+
 As escalas padrões podem ser substituídas.
 
-```{r}
-ggplot(filmes_recentes, 
-       aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
+```{r escalas-6, eval=FALSE}
+colorido +
+  scale_colour_brewer(palette = "Set1")
+```
+]
+
+.pull-right[
+```{r, ref.label="escalas-6", fig.callout = TRUE}
+```
+]
+
+---
+
+# Escalas
+
+.pull-left[
+
+As escalas padrões podem ser substituídas.
+
+```{r escalas-7, eval=FALSE}
+colorido +
   scale_colour_manual(values = c(
     "A partir de 13 anos" = "orange",
-    "Livre" = "darkblue", "Outros" = "gray", 
+    "Livre" = "darkblue", 
+    "Outros" = "gray", 
     "A partir de 18 anos" = "#ff0000"
 ))
 
 ```
+]
 
----
-
-# Zoom
-
-Há três maneiras de controlar os limites de um gráfico:
-
-1. Filtrar os dados
-
-2. Alterar os limites em cada escala
-
-3. Alterar `xlim` e `ylim` em `coord_cartesian()`.
-
-
----
-
-# Zoom
-
-
-```{r}
-filmes_recentes %>% 
-  filter(between(duracao, 75, 150)) %>% 
-  ggplot(aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point()
+.pull-right[
+```{r, ref.label="escalas-7", fig.callout = TRUE}
 ```
-
----
-
-# Zoom
-
-
-```{r}
-filmes_recentes %>% 
-  ggplot(aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
-  coord_cartesian(xlim = c(75, 150))
-```
+]
 
 ---
 
 # Temas
 
-```{r}
-filmes_recentes %>% 
-  ggplot(aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
+.pull-left[
+```{r temas-1, eval=FALSE}
+colorido +
   theme_bw()
 ```
+]
+
+.pull-right[
+```{r, ref.label="temas-1", fig.callout = TRUE}
+```
+]
 
 ---
 
 # Temas
 
-```{r}
-filmes_recentes %>% 
-  ggplot(aes(duracao, receita, 
-           col = classificacao)) +
-  geom_point() +
-  theme_minimal()
+.pull-left[
+```{r temas-2, eval=FALSE}
+colorido +
+  theme_dark()
 ```
 
----
+Para conhecer outros temas acesse: 
+[este endereço](https://github.com/jrnold/ggthemes)
 
-# Temas
+]
 
-Para conhecer outros temas acesse: [este endereço](https://github.com/jrnold/ggthemes)
+.pull-right[
+```{r, ref.label="temas-2", fig.callout = TRUE}
+```
+]
 
 ---
 
@@ -309,8 +362,8 @@ O `ggplot2` disponibiliza uma função para salvar gráficos.
 
 ```{r}
 # salva o último gráfico
-ggsave("my-plot.pdf") # sabe que é pdf 
-ggsave("my-plot.png") # sabe que é imagem
+ggsave("grafico.pdf") # sabe que é pdf 
+ggsave("grafico.png") # sabe que é imagem
 ```
 
 ---
@@ -322,7 +375,7 @@ Para salvar de uma imagem podemos usar `pdf()` ou `png()`.
 Nesse casos lembre de "desligar" o "modo salvar".
 
 ```{r, eval = FALSE}
-pdf() # ou png()
+pdf("grafico.pdf") # ou png("grafico.png")
 meu_grafico1
 meu_grafico2
 meu_grafico3
@@ -331,3 +384,14 @@ dev.off()
 
 Atenção! Os gráficos param de aparecer no RStudio quando o 
 "modo salvar" estiver ligado.
+
+---
+
+# Relatórios
+
+---
+
+
+
+
+
