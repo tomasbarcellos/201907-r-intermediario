@@ -81,6 +81,16 @@ knitr::opts_hooks$set(fig.principal = function(options) {
 
 ---
 
+# Comunicação
+
+<center>
+
+<img src = "https://raw.githubusercontent.com/hadley/r4ds/master/diagrams/data-science-communicate.png"/>
+
+</center>
+
+---
+
 # Dados
 
 ```{r}
@@ -323,7 +333,7 @@ colorido +
 .pull-left[
 ```{r temas-1, eval=FALSE}
 colorido +
-  theme_bw()
+  theme_minimal()
 ```
 ]
 
@@ -384,8 +394,20 @@ Atenção! Os gráficos param de aparecer no RStudio quando o
 "modo salvar" estiver ligado.
 
 ---
+class: center, middle
 
 # Relatórios
+
+---
+
+# Rmarkdown
+
+<br>
+
+<br>
+
+
+<center> <img src = "www/criar_rmd.png"/> </center>
 
 ---
 
@@ -404,7 +426,6 @@ Os documentos de Rmarkdown tem três componentes:
 2. Texto "normal"
 
 3. Pedaços de código 
-
 
 ---
 
@@ -498,8 +519,8 @@ As principais são:
 <br>
 
 ```
-\*italico*  ou _italico_
-\**negrito** ou  __negrito__
+ *italico*  ou _italico_
+ **negrito** ou  __negrito__
 `código`
 sobrescrito^2^ e sub-escrito~2~
 ```
@@ -511,9 +532,9 @@ sobrescrito^2^ e sub-escrito~2~
 <br>
 
 ```
-\*   Item 1 da lista sem numeração
+ *   Item 1 da lista sem numeração
 
-\*   Item 2
+ *   Item 2
 
     * Item 2a
 
@@ -583,28 +604,47 @@ No RStudio há um atalho para criar _code chunks_: `ctrl` + `alt` + `I`.
 ````markdown
 `r ''````{r}
 nrow(mtcars)
-'''
+` ``
 ````
 
+O código acima gera o seguinte resultado no documento:
 
+```{r}
+nrow(mtcars)
+```
 
 ---
 
 # Código: opções
 
 <br>
+
+A opção <a>eval</a> controla se o código será executado (avaliado) ou não.
+
+````r
+`r ''````{r, eval=FALSE}
+print("Estou com `eval = FALSE`, então não sairá nenhum resultado")
+`` `
+````
 
 ```{r, eval=FALSE}
 print("Estou com `eval = FALSE`, então não sairá nenhum resultado")
-stop("Isso não vai rodar")
 ```
-
 
 ---
 
 # Código: opções
 
 <br>
+
+A opção <a>echo</a> controla se o exibido no relatório ou não.
+
+````r
+`r ''````{r, echo=FALSE}
+print("Estou com `echo = FALSE`, então o código não aparece.")
+print("Mas o resultado, sim.")
+`` `
+````
 
 ```{r, echo=FALSE}
 print("Estou com `echo = FALSE`, então o código não aparece.")
@@ -617,14 +657,27 @@ print("Mas o resultado, sim.")
 
 <br>
 
+A opção <a>include</a> controla se código e seus resultados devem ser 
+incluídos no relatório ou não.
+
 A opção `include = FALSE` faz com que o código rode, porém nada gerado por ele 
 (imagem, impressão, mensagem de aviso, etc) seja inclído no documento.
+
+````r
+`r ''````{r, include=FALSE}
+plot(mtcars)
+`` `
+````
+
+Essa opção é geralmente usada no inicio do documento para carregar pacotes, 
+ler dados, etc.
 
 ---
 
 # Exercício
 
 ---
+class: middle, center
 
 # Shiny
 
@@ -664,6 +717,11 @@ A opção `include = FALSE` faz com que o código rode, porém nada gerado por e
 ---
 
 # Onde aprender mais sobre Shiny
+
+<center><img 
+  src = "https://www.sccpre.cat/mypng/full/34-343872_r-shiny-logo-png.png"
+  height = "200px"
+/></center>
 
 - Tutorial: https://shiny.rstudio.com/tutorial/
 
@@ -745,7 +803,7 @@ Cada função de saída tem como argumento principal o <a>id</a> do Output.
 
 ```{r, eval = FALSE}
 # Nome da função
-plotOutput("filmes") # id do Ouput
+plotOutput("filmes") # id do Output
 ```
 
 Este id será usado para criar a saída no servidor.
