@@ -1,0 +1,91 @@
+---
+author: Meu nome Aqui!
+title: Servidores públicos federais civis de janeiro de 2019
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+cadastro <- read_rds("dados/cadastro.rds") %>% 
+  mutate(tempo_servico = (Sys.Date() - ingresso) / lubridate::dyears(1))
+
+remuneracao <- read_rds("dados/remuneracao.rds")
+
+# inclua as informações de remuneração na tabela de cadastro.
+# Salve essa nova tabela no objeto dados
+
+```
+
+# Estatísticas gerais
+
+A tabela abaixo demonstra a distribuição (quantidade) dos servidores pelas 
+Unidades da Federação de exercício.
+
+```{r}
+# Use a função knitr::kable() para mostrar a tabela no relatório
+
+```
+
+Abaixo temos as quantidades de servidores por regime de trabalho.
+
+```{r}
+
+```
+
+# Jornada de trabalho
+
+```{r}
+# O código desta parte não deve aparecer no documentos
+# Mas irá criar os objetos usados no texto abaixo. 
+# Qual opção deve ser incluída na chunk?
+
+```
+
+Os servidores públicos civis do poder executivo federal cumpriram uma 
+jornada de trabalho média de `r "complete este código"` horas semanais 
+em janeiro de 2019. Para o cálculo desta média considerou-se que os 
+servidores com dedicação exclusiva trabalham durante 40 horas na semana.
+
+Entre os servidores do regime jurídico único, a jornada média foi de 
+`r "codigo"` horas, enquanto os celetistas fizeram `r "codigo"`.
+
+# Remuneração
+
+A distribuição da remuneração dos servidores é apresentada no histograma abaixo.
+
+```{r}
+# Conheça a geometria geom_histogram(). Use binwidth = 1000
+# Essa geometria mapeia apenas uma variável em x
+
+```
+
+O gráfico abaixo apresenta os 10 órgãos superiores com maiores salários médios.
+
+```{r}
+# Experimente trocar os eixos do gráfico adicionando `coord_flip()`
+# As barras podem ser ordenadas com `fct_reorder()`
+```
+
+O gráfico abaixo apresenta um diagrama de disperção dos servidores 
+de **ESTADO A SUA ESCOLHA** entre a remuneração e o tempo de serviço na 
+administração pública.
+
+```{r}
+
+```
+
+A tabela abaixo apresenta a média da remuneração e do tempo de serviço 
+dos servidores por grande região do Brasil.
+
+```{r}
+regioes <- read_rds("dados/regioes.rds")
+# 
+````
+
+# Análise detalhada
+
+O órgão **XXXXX** foi escolhido para realizar uma análise detalhada
+
+```{r}
+
+```
+
